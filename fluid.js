@@ -1,60 +1,4 @@
-import ml5 from 'ml5'
-import P5 from 'p5'
-import 'p5/lib/addons/p5.dom'
-
 import { pubsub } from './tools'
-
-const sketch = p5 => {
-  let video
-  let poseNet
-  let poses = []
-
-  const modelReady = () => {
-    p5.select('#status').html('Model Loaded')
-  }
-
-  const drawPoint = (keypoint) => {
-    p5.fill(255, 0, 0)
-    p5.noStroke()
-    p5.ellipse(
-      keypoint.x,
-      keypoint.y,
-      10, 10
-    )
-  }
-
-  const drawHips = () => {
-    for (let i = 0; i < poses.length; i++) {
-      const pose = poses[i].pose
-
-      drawPoint(pose.leftWrist)
-      // drawPoint(pose.rightWrist)
-
-      pubsub.publish('keypointMove', pose.leftWrist)
-    }
-  }
-
-  p5.setup = () => {
-    p5.createCanvas(640, 480)
-    video = p5.createCapture(p5.VIDEO)
-    video.size(p5.width, p5.height)
-
-    poseNet = ml5.poseNet(video, modelReady)
-    poseNet.on('pose', (results) => {
-      poses = results
-    })
-    video.hide()
-  }
-
-  p5.draw = () => {
-    p5.image(video, 0, 0, p5.width, p5.height)
-    drawHips()
-  }
-}
-
-(() => new P5(sketch))()
-
-/* --------------------------------- */
 
 const canvas = document.getElementById('fluid');
 canvas.width = canvas.clientWidth;
@@ -1267,21 +1211,15 @@ function resizeCanvas () {
     }
 }
 
-pubsub.suscribe('keypointMove', keypoint => {
-  pointers[0].moved = true;
-  pointers[0].dx = (keypoint.x - pointers[0].x) * 5.0;
-  pointers[0].dy = (keypoint.y - pointers[0].y) * 5.0;
-  pointers[0].x = keypoint.x;
-  pointers[0].y = keypoint.y;
-})
+pubsub.suscribe('keypointMove', (keypoint) => console.log(keypoint))
 
-// canvas.addEventListener('mousemove', e => {
-//     pointers[0].moved = true;
-//     pointers[0].dx = (e.offsetX - pointers[0].x) * 5.0;
-//     pointers[0].dy = (e.offsetY - pointers[0].y) * 5.0;
-//     pointers[0].x = e.offsetX;
-//     pointers[0].y = e.offsetY;
-// });
+canvas.addEventListener('mousemove', e => {
+    pointers[0].moved = true;
+    pointers[0].dx = (e.offsetX - pointers[0].x) * 5.0;
+    pointers[0].dy = (e.offsetY - pointers[0].y) * 5.0;
+    pointers[0].x = e.offsetX;
+    pointers[0].y = e.offsetY;
+});
 
 canvas.addEventListener('touchmove', e => {
     e.preventDefault();
