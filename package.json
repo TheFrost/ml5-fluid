@@ -9,6 +9,10 @@
     "parcel-bundler": "^1.12.3"
   },
   "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
     "standard": "^13.0.0"
   },
   "scripts": {
@@ -17,5 +21,10 @@
     "rm:dev": "rm -rf dist/ && yarn rm:cache",
     "rm:build": "rm -rf build/ && yarn rm:cache",
     "rm:cache": "rm -rf .cache"
+  },
+  "standard": {
+    "ignore": [
+      "./fluid.js"
+    ]
   }
 }
